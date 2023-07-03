@@ -1,0 +1,135 @@
+openapi: 3.0.0
+info:
+  title: Warehouse API
+  version: 1.0.0
+
+paths:
+  /products:
+    get:
+      operationId: getAllProducts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '500':
+          description: Internal Server Error
+    post:
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductDto'
+            example:
+              name: table
+              price:
+                amount: 600.00
+                currency: SEK
+              stock: 5
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+  /products/product/{id}:
+    get:
+      operationId: getProductById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        400:
+          description: invalid id
+        200:
+          description: get a product
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/ProductWithFormattedPrice"
+    put:
+      operationId: updateProductById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        description: Product object to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+            example:
+              stock: 5
+      responses:
+        400:
+          description: invalid id
+        200:
+          description: update a product
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Product"
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        price:
+          type: object
+          properties:
+            amount:
+              type: number
+            currency:
+              type: string
+        stock:
+          type: integer
+          format: int32
+    ProductWithFormattedPrice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        price:
+          type: string
+        stock:
+          type: integer
+          format: int32
+    ProductDto:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: object
+          properties:
+            amount:
+              type: number
+            currency:
+              type: string
+        stock:
+          type: integer
+          format: int32
